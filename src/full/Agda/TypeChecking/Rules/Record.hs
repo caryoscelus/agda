@@ -69,7 +69,7 @@ checkRecDef
   :: Info.DefInfo              -- ^ Position and other info.
   -> QName                     -- ^ Record type identifier.
   -> UniverseCheck             -- ^ Check universes?
-  -> Maybe (Ranged Induction)  -- ^ Optional: (co)inductive declaration.
+  -> Maybe Induction           -- ^ Optional: (co)inductive declaration.
   -> Maybe HasEta              -- ^ Optional: user specified eta/no-eta
   -> Maybe QName               -- ^ Optional: constructor name.
   -> A.DataDefParams           -- ^ Record parameters.
@@ -157,11 +157,8 @@ checkRecDef i name uc ind eta con (A.DataDefParams gpars ps) contel fields =
           getName _                    = []
 
           fs = concatMap getName fields
-          -- indCo is what the user wrote: inductive/coinductive/Nothing.
-          -- We drop the Range.
-          indCo = rangedThing <$> ind
           -- A constructor is inductive unless declared coinductive.
-          conInduction = fromMaybe Inductive indCo
+          conInduction = fromMaybe Inductive ind
           -- Andreas, 2016-09-20, issue #2197.
           -- Eta is inferred by the positivity checker.
           -- We should turn it off until it is proven to be safe.
@@ -209,7 +206,7 @@ checkRecDef i name uc ind eta con (A.DataDefParams gpars ps) contel fields =
               , recTel            = telh `abstract` ftel
               , recAbstr          = Info.defAbstract i
               , recEtaEquality'   = haveEta
-              , recInduction      = indCo
+              , recInduction      = ind
                   -- We retain the original user declaration [(co)inductive]
                   -- in case the record turns out to be recursive.
               -- Determined by positivity checker:

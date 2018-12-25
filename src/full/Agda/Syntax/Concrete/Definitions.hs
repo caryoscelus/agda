@@ -149,7 +149,7 @@ data NiceDeclaration
       --   Andreas, 2017-01-01: Because of issue #2372, we add 'IsInstance' here.
       --   An alias should know that it is an instance.
   | NiceDataDef Range Origin IsAbstract PositivityCheck UniverseCheck Name [LamBinding] [NiceConstructor]
-  | NiceRecDef Range Origin IsAbstract PositivityCheck UniverseCheck Name (Maybe (Ranged Induction)) (Maybe HasEta)
+  | NiceRecDef Range Origin IsAbstract PositivityCheck UniverseCheck Name (Maybe Induction) (Maybe HasEta)
            (Maybe (Name, IsInstance)) [LamBinding] [Declaration]
   | NicePatternSyn Range Name [Arg Name] Pattern
   | NiceGeneralize Range Access ArgInfo Name Expr

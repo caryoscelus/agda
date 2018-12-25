@@ -497,7 +497,7 @@ instance Pretty Declaration where
                     , nest 2 $ vcat $ map pretty ds
                     ]
 
-pRecord :: Name -> Maybe (Ranged Induction) -> Maybe HasEta -> Maybe (Name, IsInstance) -> [LamBinding] -> Maybe Expr -> [Declaration] -> Doc
+pRecord :: Name -> Maybe Induction -> Maybe HasEta -> Maybe (Name, IsInstance) -> [LamBinding] -> Maybe Expr -> [Declaration] -> Doc
 pRecord x ind eta con tel me cs =
   sep [ hsep  [ "record"
               , pretty x
@@ -515,7 +515,7 @@ pRecord x ind eta con tel me cs =
                 ]
         pType Nothing  =
                   "where"
-        pInd = maybeToList $ text . show . rangedThing <$> ind
+        pInd = maybeToList $ text . show <$> ind
         pEta = maybeToList $ eta <&> \case
           YesEta -> "eta-equality"
           NoEta  -> "no-eta-equality"

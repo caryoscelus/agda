@@ -1788,7 +1788,7 @@ ArgTypeSignatures0
 --     | ModalArgTypeSigs                              { reverse $1 }
 
 -- Record declarations, including an optional record constructor name.
-RecordDeclarations :: { ((Maybe (Ranged Induction), Maybe HasEta, Maybe (Name, IsInstance)), [Declaration]) }
+RecordDeclarations :: { ((Maybe Induction, Maybe HasEta, Maybe (Name, IsInstance)), [Declaration]) }
 RecordDeclarations
                                   : vopen RecordDirectives close {% ((,) `fmap` verifyRecordDirectives $2 <*> pure []) }
                                   | vopen RecordDirectives semi Declarations1 close {% ((,) `fmap` verifyRecordDirectives $2 <*> pure $4) }
@@ -2135,7 +2135,7 @@ data RecordDirective
    | Eta         (Ranged HasEta)
    deriving (Eq,Show)
 
-verifyRecordDirectives :: [RecordDirective] -> Parser (Maybe (Ranged Induction), Maybe HasEta, Maybe (Name, IsInstance))
+verifyRecordDirectives :: [RecordDirective] -> Parser (Maybe Induction, Maybe HasEta, Maybe (Name, IsInstance))
 verifyRecordDirectives xs
   | null rs = return (ltm is, ltm es, ltm cs)
   | otherwise = parseErrorRange (head rs) $ "Repeated record directives at: \n" ++ intercalate "\n" (map show rs)
@@ -2146,8 +2146,9 @@ verifyRecordDirectives xs
   errorFromList [] = []
   errorFromList [x] = []
   errorFromList xs = map getRange xs
-  rs = sort (concat ([errorFromList is, errorFromList es', errorFromList cs]))
-  is = [ i | Induction i <- xs ]
+  rs = sort (concat ([errorFromList is', errorFromList es', errorFromList cs]))
+  is' = [ i | Induction i <- xs ]
+  is = map rangedThing is'
   es' = [ i | Eta i <- xs ]
   es = map rangedThing es'
   cs = [ i | Constructor i <- xs ]
