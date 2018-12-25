@@ -5,6 +5,7 @@
 .cabal-sandbox/
 .stack-work/
 .DS_Store
+.emacs*
 .sw[a-p]
 *.agdai
 *.hi
