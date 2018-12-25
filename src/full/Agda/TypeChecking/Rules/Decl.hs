@@ -278,7 +278,6 @@ mutualChecks mi d ds mid names = do
   -- Restricting coinduction to recursive does not solve the
   -- actual problem, and prevents interesting sound applications
   -- of sized types.
-  -- checkCoinductiveRecords  ds
   -- Andreas, 2012-09-11:  Injectivity check stores clauses
   -- whose 'Relevance' is affected by polarity computation,
   -- so do it here (again).
@@ -445,16 +444,6 @@ checkPositivity_ mi names = Bench.billTo [Bench.Positivity] $ do
   -- positivity check, so it needs happen after positivity
   -- check.
   computePolarity $ Set.toList names
-
--- | Check that all coinductive records are actually recursive.
---   (Otherwise, one can implement invalid recursion schemes just like
---   for the old coinduction.)
-checkCoinductiveRecords :: [A.Declaration] -> TCM ()
-checkCoinductiveRecords ds = forM_ ds $ \case
-  A.RecDef _ q _ (Just (Ranged r CoInductive)) _ _ _ _ _ -> setCurrentRange r $ do
-    unlessM (isRecursiveRecord q) $ typeError $ GenericError $
-      "Only recursive records can be coinductive"
-  _ -> return ()
 
 -- | Check a set of mutual names for constructor-headedness.
 checkInjectivity_ :: Set QName -> TCM ()
